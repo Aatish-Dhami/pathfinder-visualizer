@@ -82,7 +82,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <button onClick={visualizeDijkstra}>Visualize</button>
+      <button onClick={visualizeDijkstra}>Visualize Dijkstra Algorithm</button>
       <div className="grid">
           {grid.map((row, rowIdx) => {
             return (
