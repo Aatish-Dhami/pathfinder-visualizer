@@ -66,3 +66,4 @@ export function dijkstra(grid, startNode, finishNode) {
       currentNode = currentNode.previousNode;
     }
     return nodesInShortestPathOrder;
+  }
