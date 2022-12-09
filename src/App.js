@@ -1,6 +1,8 @@
 import './App.css';
 import React from 'react';
-import Cell from './components/Cell';
+import Node from './components/Node';
+import { dijkstra, getNodesInShortestPathOrder } from './algorithms/dijkstra';
+import Cell from './components/Node';
 
 const START_NODE_ROW = 10;
 const START_NODE_COL = 15;
@@ -12,7 +14,9 @@ export default function App() {
   const [grid, setGrid] = React.useState([])
 
   React.useEffect(() => {
-    setGrid(getInitialGrid)
+    // const grid = getInitialGrid();
+    // setGrid({grid});
+    setGrid(getInitialGrid())
   }, [])
 
   function getInitialGrid() {
@@ -40,11 +44,45 @@ export default function App() {
     }
   }
 
-  console.log(grid)
 
+  function visualizeDijkstra() {
+    const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+  }
+
+  function animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
+    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+      if (i === visitedNodesInOrder.length) {
+        setTimeout(() => {
+          animateShortestPath(nodesInShortestPathOrder);
+        }, 10 * i);
+        return;
+      }
+      setTimeout(() => {
+        const node = visitedNodesInOrder[i];
+        document.getElementById(`node-${node.row}-${node.col}`).className =
+          'node node-visited';
+      }, 10 * i);
+    }
+  }
+
+  function animateShortestPath(nodesInShortestPathOrder) {
+    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+      setTimeout(() => {
+        const node = nodesInShortestPathOrder[i];
+        document.getElementById(`node-${node.row}-${node.col}`).className =
+          'node node-shortest-path';
+      }, 50 * i);
+    }
+  }
 
   return (
     <div className="App">
+      <button onClick={visualizeDijkstra}>Visualize</button>
+
     </div>
   );
 }
