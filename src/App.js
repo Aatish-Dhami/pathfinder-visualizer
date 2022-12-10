@@ -45,6 +45,32 @@ export default function App() {
     }
   }
 
+  function handleMouseDown(row, col) {
+    const newGrid = getNewGridWithWallToggled(grid, row, col);
+    setGrid(newGrid)
+    setMouseIsPressed(true)
+  }
+
+  function handleMouseEnter(row, col) {
+    if (!mouseIsPressed) return;
+    const newGrid = getNewGridWithWallToggled(grid, row, col);
+    setGrid(newGrid)
+  }
+
+  function handleMouseUp() {
+    setMouseIsPressed(false)
+  }
+
+  function getNewGridWithWallToggled(grid, row, col) {
+    const newGrid = grid.slice();
+    const node = newGrid[row][col];
+    const newNode = {
+      ...node,
+      isWall: !node.isWall,
+    };
+    newGrid[row][col] = newNode;
+    return newGrid;
+  };
 
   function visualizeDijkstra() {
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
@@ -97,11 +123,11 @@ export default function App() {
                       isStart={isStart}
                       isWall={isWall}
                       mouseIsPressed={mouseIsPressed}
-                      onMouseDown={(row, col) => this.handleMouseDown(row, col)}
+                      onMouseDown={(row, col) => handleMouseDown(row, col)}
                       onMouseEnter={(row, col) =>
-                        this.handleMouseEnter(row, col)
+                        handleMouseEnter(row, col)
                       }
-                      onMouseUp={() => this.handleMouseUp()}
+                      onMouseUp={() => handleMouseUp()}
                       row={row}></Node>
                   );
                 })}
