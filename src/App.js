@@ -2,7 +2,7 @@ import './App.css';
 import React from 'react';
 import Node from './components/Node';
 import { dijkstra, getNodesInShortestPathOrder } from './algorithms/dijkstra';
-import Cell from './components/Node';
+import { Button } from 'antd'
 
 const START_NODE_ROW = 10;
 const START_NODE_COL = 15;
@@ -22,7 +22,7 @@ export default function App() {
 
   function getInitialGrid() {
     const grid = [];
-    for (let row = 0; row < 20; row++) {
+    for (let row = 0; row < 25; row++) {
       const currentRow = [];
       for (let col = 0; col < 50; col++) {
         currentRow.push(createNode(col, row));
@@ -100,15 +100,25 @@ export default function App() {
     for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
       setTimeout(() => {
         const node = nodesInShortestPathOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
+        if(i === 0){
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+          'node node-shortest-path-start-node';
+        } else if(i === nodesInShortestPathOrder.length-1){
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+          'node node-shortest-path-end-node';
+        } else {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
           'node node-shortest-path';
+        }
       }, 50 * i);
     }
   }
 
   return (
     <div className="App">
-      <button onClick={visualizeDijkstra}>Visualize Dijkstra Algorithm</button>
+      {/* <button onClick={visualizeDijkstra}>Visualize Dijkstra Algorithm</button> */}
+      <Button onClick={visualizeDijkstra} type='primary'>Visualize Dijkstra Algorithm</Button>
+      <p>Press and drag on circles to put walls and then press the button.  </p>
       <div className="grid">
           {grid.map((row, rowIdx) => {
             return (
