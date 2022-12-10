@@ -4,19 +4,22 @@ import Node from './components/Node';
 import { dijkstra, getNodesInShortestPathOrder } from './algorithms/dijkstra';
 import { Button } from 'antd'
 
-const START_NODE_ROW = 10;
-const START_NODE_COL = 15;
-const FINISH_NODE_ROW = 10;
-const FINISH_NODE_COL = 35;
+
 
 export default function App() {
 
+  const [START_NODE_ROW, setSTART_NODE_ROW] = React.useState(-1)
+  const [START_NODE_COL, setSTART_NODE_COL] = React.useState(-1)
+  const [FINISH_NODE_ROW, setFINISH_NODE_ROW] = React.useState(-1)
+  const [FINISH_NODE_COL, setFINISH_NODE_COL] = React.useState(-1)
+
   const [grid, setGrid] = React.useState([])
   const [mouseIsPressed, setMouseIsPressed] = React.useState(false)
+  const [startNodePlaced, setStartNodePlaced] = React.useState(false)
+  const [endNodePlaced, setEndNodePlaced] = React.useState(false)
 
+ 
   React.useEffect(() => {
-    // const grid = getInitialGrid();
-    // setGrid({grid});
     setGrid(getInitialGrid())
   }, [])
 
@@ -46,15 +49,39 @@ export default function App() {
   }
 
   function handleMouseDown(row, col) {
-    const newGrid = getNewGridWithWallToggled(grid, row, col);
-    setGrid(newGrid)
-    setMouseIsPressed(true)
+    console.log(`In Enter row ${row}`)
+
+    if(!startNodePlaced){
+      const newGrid = setStartNode(row, col);
+      setGrid(newGrid)
+      console.log(`After setStart ${START_NODE_ROW}`)
+      console.log(`After setStart ${START_NODE_COL}`)
+    }else if(!endNodePlaced){
+      const newGrid = setEndNode(row, col);
+      setGrid(newGrid)
+    }else{
+      const newGrid = getNewGridWithWallToggled(grid, row, col);
+      setGrid(newGrid)
+      setMouseIsPressed(true)
+    }
   }
 
   function handleMouseEnter(row, col) {
+    if (!startNodePlaced) return;
+    if (!endNodePlaced) return;
     if (!mouseIsPressed) return;
-    const newGrid = getNewGridWithWallToggled(grid, row, col);
-    setGrid(newGrid)
+
+    if(!startNodePlaced){
+      const newGrid = setStartNode(row, col);
+      setGrid(newGrid)
+    }else if(!endNodePlaced){
+      const newGrid = setEndNode(row, col);
+      setGrid(newGrid)
+    }else{
+      const newGrid = getNewGridWithWallToggled(grid, row, col);
+      setGrid(newGrid)
+      setMouseIsPressed(true)
+    }
   }
 
   function handleMouseUp() {
@@ -71,6 +98,40 @@ export default function App() {
     newGrid[row][col] = newNode;
     return newGrid;
   };
+
+  function setStartNode(row, col) {
+    setSTART_NODE_ROW(row);
+    setSTART_NODE_COL(col);
+
+    console.log(`In setStart ${START_NODE_ROW}`)
+    console.log(`In setStart ${START_NODE_COL}`)
+
+    setStartNodePlaced(true)
+    
+    const newGrid = grid.slice();
+    const node = newGrid[row][col];
+    const newNode = {
+      ...node,
+      isStart: true,
+    };
+    newGrid[row][col] = newNode;
+    return newGrid;
+  }
+
+  function setEndNode(row, col) {
+    setFINISH_NODE_ROW(row);
+    setFINISH_NODE_COL(col);
+    setEndNodePlaced(true)
+
+    const newGrid = grid.slice();
+    const node = newGrid[row][col];
+    const newNode = {
+      ...node,
+      isFinish: true,
+    };
+    newGrid[row][col] = newNode;
+    return newGrid;
+  }
 
   function visualizeDijkstra() {
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
@@ -114,10 +175,11 @@ export default function App() {
     }
   }
 
+
   return (
     <div className="App">
-      {/* <button onClick={visualizeDijkstra}>Visualize Dijkstra Algorithm</button> */}
       <Button onClick={visualizeDijkstra} type='primary'>Visualize Dijkstra Algorithm</Button>
+      <p>Place Start and End Node First</p>
       <p>Press and drag on circles to put walls and then press the button.  </p>
       <div className="grid">
           {grid.map((row, rowIdx) => {
